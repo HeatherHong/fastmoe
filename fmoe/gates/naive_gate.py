@@ -37,6 +37,12 @@ class NaiveGate(BaseGate):
         # (BxL) x 1 x top_k
         gate_score = F.softmax(gate_top_k_val, dim=-1)
 
+        
+        output_file = "gate_output.txt"
+        with open(output_file, 'a') as f:
+            for val, idx in zip(gate_top_k_val, gate_top_k_idx):
+                f.write(f"Value: {val.tolist()}, Index: {idx.tolist()}\n")
+
         # dummy loss
         self.set_loss(torch.zeros(1, requires_grad=True).cuda())
 
