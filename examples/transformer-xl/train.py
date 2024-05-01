@@ -192,6 +192,12 @@ corpus = get_lm_corpus(args.data, args.dataset)
 ntokens = len(corpus.vocab)
 args.n_token = ntokens
 
+with open('/output/token_indices.txt', 'w') as f:
+    # 遍历corpus.vocab中的每个token和对应的索引
+    for token, index in corpus.vocab.items():
+        # 将token和对应的索引写入文件
+        f.write(f"{token}: {index}\n")
+
 eval_batch_size = 10
 tr_iter = corpus.get_iterator('train', args.batch_size, args.tgt_len,
     device=device, ext_len=args.ext_len)
