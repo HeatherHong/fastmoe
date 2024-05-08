@@ -177,6 +177,17 @@ class FMoE(nn.Module):
             inp_slice = inp[base_idx : base_idx + batch_size]
             outputs.append(self.experts[i](inp_slice, torch.tensor([fwd_expert_count[i]])))
             base_idx += batch_size
+        global layer_count_e
+        if 'print_count_e' not in globals():
+            layer_count_e = 0
+        output_file = "/global/home/users/heatherhong/output/fwd_expert_count.csv"
+        with open(output_file, 'a', newline='') as f:
+            writer = csv.writer(f)
+            writer.writerow([layer_count_e])
+            data = [fwd_expert_count[i] for i in range(self.num_expert)]
+            writer.writerow(data)
+        print(f'Data has been written to {output_file}_{layer_count_e}.')
+        layer_count_e += 1
         return torch.cat(outputs, dim=0)
 
     def expert_fn_single(self, inp, fwd_expert_count, idx):
