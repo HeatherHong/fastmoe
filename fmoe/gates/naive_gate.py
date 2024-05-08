@@ -38,10 +38,28 @@ class NaiveGate(BaseGate):
         gate_score = F.softmax(gate_top_k_val, dim=-1)
 
         
-        output_file = "~/hht/output/gate_output.txt"
-        with open(output_file, 'a') as f:
-            for val, idx in zip(gate_top_k_val, gate_top_k_idx):
-                f.write(f"Value: {val.tolist()}, Index: {idx.tolist()}\n")
+        if 'layer_count' not in globals():
+            layer_count = 0
+        if 'iteration_count' not in globals():
+            iteration_count = 0
+        
+        if iteration_count % 100 == 0:
+            output_file = f"/global/home/users/heatherhong/output/gate_output_{iteration_count}.csv"
+            data = zip(gate_top_k_idx)
+            with open(output_file, 'a', newline='') as f:
+                writer = csv.writer(f)
+                # 写入标题行
+                writer.writerow([layer_count,iteration_count])
+                # 写入数据行
+                writer.writerows(data)
+            print(f'Data has been written to {output_file}{layer_count}{iteration_count}.')
+        
+        if (layer_count + 1) % 24 == 0:
+            layer_count = 0
+            iteration_count += 1
+        else:
+            layer_count += 1
+
 
         # dummy loss
         self.set_loss(torch.zeros(1, requires_grad=True).cuda())
