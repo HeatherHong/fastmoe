@@ -38,6 +38,19 @@ class LMOrderedIterator(object):
         beg_idx = max(0, i - self.ext_len)
 
         data = self.data[beg_idx:end_idx]
+                global print_count
+        if 'print_count' not in globals():
+            print_count = 0
+        if print_count % 100 == 0:
+            output_file = f'/output/token_indices_{print_count}.csv'
+            with open(output_file, 'a', newline='') as f:
+                writer = csv.writer(f)
+                # 写入标题行
+                writer.writerow(['Token1', 'Token2'])
+                # 写入数据行
+                writer.writerows(data)
+            print(f'Data has been written to {output_file}.')
+        print_count += 1
         target = self.data[i+1:i+1+seq_len]
 
         return data, target, seq_len
